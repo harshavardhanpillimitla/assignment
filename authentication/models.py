@@ -21,13 +21,13 @@ class InvoiceHeader(models.Model):
 
 
 class InvoiceItem(models.Model):
-    invoice_header = models.ForeignKey(InvoiceHeader, on_delete = models.DO_NOTHING)
+    invoice_header = models.ForeignKey(InvoiceHeader, on_delete = models.CASCADE)
     item_name = models.CharField(max_length=30)
     quantity = models.FloatField()
     amount = models.FloatField()
 
 class InvoiceBillSundry(models.Model):
-    invoice_header = models.ForeignKey(InvoiceHeader, on_delete = models.DO_NOTHING)
+    invoice_header = models.ForeignKey(InvoiceHeader, on_delete = models.CASCADE)
     billing_sundry_name = models.CharField(max_length=30)
     amount = models.FloatField()
     # for addition to bill 'a' , subration from bill 's'
@@ -48,3 +48,26 @@ class InvoiceBillSundry(models.Model):
 # Id: UUID
 # billSundryName: string
 # Amount: decimal
+
+
+# {
+#     "date":'asa', 
+#     "invoice_number":232,
+#     "customer_name":"232",
+#      "billing_address":"sdsd",
+#       "shipping_address":"", 
+#       "gstin":233, 
+#       "total_amount":0, 
+#       "invoice_items":[
+#           {
+#               "item_name":"sds",
+#               "quantity":1.2,
+#               "amount":0
+#           }
+#       ], 
+#       "invoice_billsundry":[{
+#           "billing_sundry_name":"sdsDS",
+#           "amount":10,
+#           "type_of_operation":"a"
+#       }]
+# }

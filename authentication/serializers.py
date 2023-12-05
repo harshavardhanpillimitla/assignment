@@ -5,9 +5,12 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InvoiceItem
-        fields = '__all__'
+        fields = [ "item_name",
+              "quantity",
+              "amount"]
     
-    def validate_price(self, value):
+    def validate_amount(self, value):
+        print("dfd")
         if (value<=0):
             raise serializers.ValidationError(
             'price must be grater than zero'
@@ -22,7 +25,7 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
         return value
     
     def validate(self, data):
-        data['amount'] = data.get('price') * data.get('quantity')
+        data['amount'] = data.get('amount',0) * data.get('quantity',0)
         return data
          
 
@@ -31,15 +34,36 @@ class InvoiceBillSundrySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = InvoiceBillSundry
-        fields = '__all__'
-
-
-class InvoiceHeaderSerializer(serializers.ModelSerializer):
+        fields = [ "billing_sundry_name",
+          "amount",
+          "type_of_operation"]
+    
+class InvoiceHeaderGetSerializer(serializers.ModelSerializer):
     invoice_items = InvoiceItemSerializer(many=True)
     invoice_billsundry = InvoiceBillSundrySerializer(many=True)
     class Meta:
         model = InvoiceHeader
-        fields = ['date', 'invoice_number','customer_name', 'billing_address' , 'shipping_address', 'gstin', 'total_amount', 'invoice_items', 'invoice_billsundry']
+        fields = ["date", "invoice_number","customer_name", "billing_address" , "shipping_address", "gstin", "total_amount", "invoice_items", "invoice_billsundry"]
+
+
+class InvoiceHeaderSerializer(serializers.ModelSerializer):
+    invoice_items = InvoiceItemSerializer(many=True, write_only=True)
+    invoice_billsundry = InvoiceBillSundrySerializer(many=True, write_only=True)
+    invoiceitems = serializers.SerializerMethodField()
+    invoicebillsundry = serializers.SerializerMethodField()
+
+    def get_invoiceitems(self, obj):
+        return InvoiceItemSerializer(obj.invoiceitem_set.all(), many=True).data
+
+    def get_invoicebillsundry(self,obj):
+        return InvoiceBillSundrySerializer(obj.invoicebillsundry_set.all(), many=True).data
+
+
+
+    
+    class Meta:
+        model = InvoiceHeader
+        fields = ["date", "invoice_number","customer_name", "billing_address" , "shipping_address", "gstin", "total_amount", "invoice_items", "invoice_billsundry", 'invoiceitems',"invoicebillsundry"]
 
     def create(self, validated_data):
         invoice_items = validated_data.pop('invoice_items', [])
@@ -51,13 +75,18 @@ class InvoiceHeaderSerializer(serializers.ModelSerializer):
         
         bulk_create_invoice_items = []
         for item in invoice_items:
+            item.update({'invoice_header':invoice_header})
             serializer =  InvoiceItemSerializer(data=item)
             if(serializer.is_valid()):
                 sum_invoice_amount += serializer.validated_data.get('amount')
                 bulk_create_invoice_items.append(InvoiceItem(invoice_header=invoice_header,**serializer.validated_data))
 
         bulk_create_invoice_billsundry = []
+        print(invoice_billsundry)
         for sundry in invoice_billsundry:
+            temp=sundry
+            sundry.update({'invoice_header':invoice_header})
+            print(sundry)
             serializer =  InvoiceBillSundrySerializer(data=sundry)
             if(serializer.is_valid()):
                 if(serializer.validated_data.get('type_of_operation')=='a'):
@@ -71,8 +100,13 @@ class InvoiceHeaderSerializer(serializers.ModelSerializer):
 
         InvoiceItem.objects.bulk_create(bulk_create_invoice_items)
         InvoiceBillSundry.objects.bulk_create(bulk_create_invoice_billsundry)
-
+        
         return invoice_header
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        print(representation)
+        return representation
 
     
     def update(self,instance, validated_data):
