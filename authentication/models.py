@@ -24,6 +24,7 @@ class InvoiceItem(models.Model):
     invoice_header = models.ForeignKey(InvoiceHeader, on_delete = models.CASCADE)
     item_name = models.CharField(max_length=30)
     quantity = models.FloatField()
+    price = models.FloatField()
     amount = models.FloatField()
 
 class InvoiceBillSundry(models.Model):

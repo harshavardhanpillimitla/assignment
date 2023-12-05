@@ -7,10 +7,9 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
         model = InvoiceItem
         fields = [ "item_name",
               "quantity",
-              "amount"]
+              "price", "amount"]
     
-    def validate_amount(self, value):
-        print("dfd")
+    def validate_price(self, value):
         if (value<=0):
             raise serializers.ValidationError(
             'price must be grater than zero'
@@ -25,7 +24,7 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
         return value
     
     def validate(self, data):
-        data['amount'] = data.get('amount',0) * data.get('quantity',0)
+        data['amount'] = data.get('price',0) * data.get('quantity',0)
         return data
          
 
@@ -63,7 +62,7 @@ class InvoiceHeaderSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = InvoiceHeader
-        fields = ["date", "invoice_number","customer_name", "billing_address" , "shipping_address", "gstin", "total_amount", "invoice_items", "invoice_billsundry", 'invoiceitems',"invoicebillsundry"]
+        fields = ["id","date", "invoice_number","customer_name", "billing_address" , "shipping_address", "gstin", "total_amount", "invoice_items", "invoice_billsundry", 'invoiceitems',"invoicebillsundry"]
 
     def create(self, validated_data):
         invoice_items = validated_data.pop('invoice_items', [])
@@ -86,7 +85,6 @@ class InvoiceHeaderSerializer(serializers.ModelSerializer):
         for sundry in invoice_billsundry:
             temp=sundry
             sundry.update({'invoice_header':invoice_header})
-            print(sundry)
             serializer =  InvoiceBillSundrySerializer(data=sundry)
             if(serializer.is_valid()):
                 if(serializer.validated_data.get('type_of_operation')=='a'):
@@ -95,7 +93,7 @@ class InvoiceHeaderSerializer(serializers.ModelSerializer):
                     sum_sundry_amount -=  serializer.validated_data.get('amount')
                 bulk_create_invoice_billsundry.append(InvoiceBillSundry(invoice_header=invoice_header,**serializer.validated_data))
 
-        invoice_header.amount = sum_invoice_amount + sum_sundry_amount
+        invoice_header.total_amount = sum_invoice_amount + sum_sundry_amount
         invoice_header.save()
 
         InvoiceItem.objects.bulk_create(bulk_create_invoice_items)
@@ -122,7 +120,7 @@ class InvoiceHeaderSerializer(serializers.ModelSerializer):
             serializer =  InvoiceItemSerializer(data=item)
             if(serializer.is_valid()):
                 sum_invoice_amount += serializer.validated_data.get('amount')
-                bulk_create_invoice_items.append(InvoiceItem(invoice_header=invoice_header,**serializer.validated_data))
+                bulk_create_invoice_items.append(InvoiceItem(invoice_header=instance,**serializer.validated_data))
 
         bulk_create_invoice_billsundry = []
         for sundry in invoice_billsundry:
@@ -132,16 +130,16 @@ class InvoiceHeaderSerializer(serializers.ModelSerializer):
                     sum_sundry_amount += serializer.validated_data.get('amount')
                 else:
                     sum_sundry_amount -=  serializer.validated_data.get('amount')
-                bulk_create_invoice_billsundry.append(InvoiceBillSundry(invoice_header=invoice_header,**serializer.validated_data))
+                bulk_create_invoice_billsundry.append(InvoiceBillSundry(invoice_header=instance,**serializer.validated_data))
                 
-        invoice_header.amount = sum_invoice_amount + sum_sundry_amount
-        invoice_header.save()
+        instance.amount = sum_invoice_amount + sum_sundry_amount
+        instance.save()
 
         InvoiceItem.objects.bulk_create(bulk_create_invoice_items, ignore_conflicts=True)
         InvoiceBillSundry.objects.bulk_create(bulk_create_invoice_billsundry, ignore_conflicts=True)
 
 
-        return invoice_header
+        return instance
 
         
 

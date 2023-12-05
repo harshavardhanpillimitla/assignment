@@ -1,0 +1,144 @@
+{
+	"info": {
+		"_postman_id": "b4be13ff-bfac-4782-aa1b-45b53ae74b84",
+		"name": "assignment",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31618570"
+	},
+	"item": [
+		{
+			"name": "create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"date\":\"asa\", \r\n    \"invoice_number\":232,\r\n    \"customer_name\":\"232\",\r\n     \"billing_address\":\"sdsd\",\r\n      \"shipping_address\":\"hio\", \r\n      \"gstin\":233, \r\n      \"total_amount\":0, \r\n      \"invoice_items\":[\r\n          {\r\n              \"item_name\":\"sds\",\r\n              \"quantity\":1.2,\r\n              \"price\":32\r\n          }\r\n      ], \r\n      \"invoice_billsundry\":[{\r\n          \"billing_sundry_name\":\"sdsDS\",\r\n          \"amount\":10,\r\n          \"type_of_operation\":\"a\"\r\n      }]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/auth/InvoiceCrud/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"auth",
+						"InvoiceCrud",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "retrieve",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/auth/InvoiceCrud/19",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"auth",
+						"InvoiceCrud",
+						"19"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"date\": \"a\",\r\n    \"invoice_number\": 232,\r\n    \"customer_name\": \"232\",\r\n    \"billing_address\": \"sdsd\",\r\n    \"shipping_address\": \"hio\",\r\n    \"gstin\": \"233\",\r\n    \"total_amount\": 0.0,\r\n    \"invoice_items\": [\r\n        {\r\n            \"item_name\": \"sds\",\r\n            \"quantity\": 1.2,\r\n            \"amount\": 38.4\r\n        }\r\n    ],\r\n    \"invoice_billsundry\": [\r\n        {\r\n            \"billing_sundry_name\": \"sdsDS\",\r\n            \"amount\": 10.0,\r\n            \"type_of_operation\": \"a\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/auth/InvoiceCrud/18/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"auth",
+						"InvoiceCrud",
+						"18",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"date\": \"a\",\r\n    \"invoice_number\": 232,\r\n    \"customer_name\": \"232\",\r\n    \"billing_address\": \"sdsd\",\r\n    \"shipping_address\": \"hio\",\r\n    \"gstin\": \"233\",\r\n    \"total_amount\": 0.0,\r\n    \"invoice_items\": [\r\n        {\r\n            \"item_name\": \"sds\",\r\n            \"quantity\": 1.2,\r\n            \"amount\": 38.4\r\n        }\r\n    ],\r\n    \"invoice_billsundry\": [\r\n        {\r\n            \"billing_sundry_name\": \"sdsDS\",\r\n            \"amount\": 10.0,\r\n            \"type_of_operation\": \"a\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/auth/InvoiceCrud/16/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"auth",
+						"InvoiceCrud",
+						"16",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/auth/InvoiceCrud/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"auth",
+						"InvoiceCrud",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
